@@ -1,0 +1,28 @@
+# Python virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Pytest
+.pytest_cache/
+
+# Build and distribution files
+build/
+dist/
+*.egg-info/
+
+# Secrets
+.env
+.env.*
+
+# Generated reports
+reports/*.md
+!reports/.gitkeep
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
