@@ -14,12 +14,13 @@ def calculate_summary(records):
     maximum_quantity = max(quantity)
     average_unit_price = sum(unit_price) / len(unit_price)
     total_revenue = sum(q * p for q, p in zip(quantity, unit_price))
-    summary = []
-    summary.append(["Number of records", number_of_records])
-    summary.append(["Total quantity", total_quantity])
-    summary.append(["Average quantity", average_quantity])
-    summary.append(["Minimum quantity", minimum_quantity])
-    summary.append(["Maximum quantity", maximum_quantity])
-    summary.append(["Average unit price", average_unit_price])
-    summary.append(["Total revenue", total_revenue])
+    summary = {
+    "record_count": number_of_records,
+    "total_quantity": total_quantity,
+    "average_quantity": average_quantity,
+    "minimum_quantity": minimum_quantity,
+    "maximum_quantity": maximum_quantity,
+    "average_unit_price": average_unit_price,
+    "total_revenue": total_revenue,
+    }
     return summary

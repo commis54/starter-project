@@ -40,20 +40,19 @@ def write_report(summary, input_path, output_path):
         file.write(f"# Sales Summary Report\n\n")
         file.write("## Dataset Information\n\n")
         file.write(f"- Input file: {input_path}\n")
-        file.write(f"- Records analyzed: {len(summary)}\n\n")
+        file.write(f"- Records analyzed: {summary['record_count']}\n\n")
         file.write("## Quantity Statistics\n\n")
         file.write("| Metric | Value |\n")
         file.write("|---|---:|\n")
-        for i in range(len(summary)):
-            if i >= 1 and i <= 4:
-                line = f"| {summary[i][0]} | {summary[i][1]} |"
-                file.write(f"{line}\n")
+        file.write(f"| Total quantity | {summary['total_quantity']} |\n")
+        file.write(f"| Average quantity | {summary['average_quantity']} |\n")
+        file.write(f"| Minimum quantity | {summary['minimum_quantity']} |\n")
+        file.write(f"| Maximum quantity | {summary['maximum_quantity']} |\n")
         file.write("\n")
         file.write("## Price Statistics\n\n")
         file.write("| Metric | Value |\n")
         file.write("|---|---:|\n")
-        for i in range(len(summary)):
-                if i >= 5 and i <= 6:
-                    line = f"| {summary[i][0]} | {summary[i][1]} |"
-                    file.write(f"{line}\n")
+        file.write(f"| Average unit price | {summary['average_unit_price']} |\n")
+        file.write(f"| Total revenue | {summary['total_revenue']} |\n")
+        
 

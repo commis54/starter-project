@@ -76,15 +76,15 @@ def test_write_report_creates_nested_output_path(tmp_path):
     input_path = tmp_path / "sales.csv"
     output_path = tmp_path / "reports" / "2026" / "summary.md"
 
-    dummy_summary = [
-        ("Total Records", 10),
-        ("Min Quantity", 1),
-        ("Max Quantity", 20),
-        ("Avg Quantity", 10.5),
-        ("Total Quantity", 105),
-        ("Min Price", 5.00),
-        ("Max Price", 50.00),
-    ]
+    dummy_summary = {
+            "record_count": 10,
+            "total_quantity": 105,
+            "average_quantity": 10.5,
+            "minimum_quantity": 1,
+            "maximum_quantity": 20,
+            "average_unit_price": 27.5,
+            "total_revenue": 275.0,
+            }
 
     write_report(dummy_summary, input_path, output_path)
 
@@ -94,5 +94,5 @@ def test_write_report_creates_nested_output_path(tmp_path):
     content = output_path.read_text(encoding="utf-8")
     assert "# Sales Summary Report" in content
     assert f"- Input file: {input_path}" in content
-    assert "| Min Quantity | 1 |" in content
-    assert "| Min Price | 5.0 |" in content
+    assert "| Minimum quantity | 1 |" in content
+    assert "| Average unit price | 27.5 |" in content

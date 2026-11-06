@@ -8,13 +8,13 @@ def test_analysis():
         {"product": "Gadget", "category": "Tech", "quantity": 3, "unit_price": Decimal("15.00")},
     ]
     summary = calculate_summary(records)
-    assert summary[0][1] == 2  
-    assert summary[1][1] == 8
-    assert summary[2][1] == 4
-    assert summary[3][1] == 3
-    assert summary[4][1] == 5
-    assert summary[5][1] == pytest.approx(Decimal("12.75"))
-    assert summary[6][1] == pytest.approx(Decimal("97.50"))
+    assert summary["record_count"] == 2
+    assert summary["total_quantity"] == 8
+    assert summary["average_quantity"] == 4
+    assert summary["minimum_quantity"] == 3
+    assert summary["maximum_quantity"] == 5
+    assert summary["average_unit_price"] == pytest.approx(Decimal("12.75"))
+    assert summary["total_revenue"] == pytest.approx(Decimal("97.50"))
 
 def test_analysis_empty_records():
     with pytest.raises(ValueError, match="The data list is empty"):
