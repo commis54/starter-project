@@ -1,6 +1,5 @@
-from decimal import Decimal
-
-def calculate_summary(records):
+def calculate_summary(records: list[dict[str, object]]) -> dict[str, object]:
+    """Calculate summary statistics from validated sales records."""
     if len(records) == 0:
         raise ValueError("The data list is empty. Cannot calculate summary.")
     

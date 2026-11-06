@@ -4,13 +4,15 @@ from pathlib import Path
 
 REQUIRED_COLUMNS = {"product", "category", "quantity", "unit_price"}
 
+
 def load_sales_csv(file_path):
+    """Load sales data from a CSV file and validate the data."""
     file_path = Path(file_path)
     if not file_path.exists():
         raise FileNotFoundError(f"CSV file not found: {file_path}")
     if not file_path.is_file():
         raise ValueError(f"Path is not a file: {file_path}")
-    with file_path.open(mode="r", encoding="utf-8") as f:
+    with file_path.open(mode="r", newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         if reader.fieldnames is None or not REQUIRED_COLUMNS.issubset(set(reader.fieldnames)):
             raise ValueError(f"Missing required columns in CSV file: {file_path}")
@@ -19,18 +21,27 @@ def load_sales_csv(file_path):
         data = False
         for row in reader:
             data = True
+            for i in REQUIRED_COLUMNS:
+                if row[i] is None or row[i].strip() == "":
+                    raise ValueError(f"Missing required data in CSV file: {file_path}. Row: {row}")
+            if len(row) != len(REQUIRED_COLUMNS):
+                raise ValueError(f"Missing or unexpected data in CSV file: {file_path}. Row: {row}")
             try:
-                row["quantity"] = int(row["quantity"])
-                row["unit_price"] = Decimal(row["unit_price"])
-            except (ValueError, InvalidOperation, TypeError) as e:
-                raise ValueError(f"Invalid data type in CSV file: {file_path}. Error: {e} in row: {row}")
-            if row["quantity"] < 0 or row["unit_price"] < 0:
-                raise ValueError(f"Negative values found in CSV file: {file_path}")
+                row["product"] = str(row["product"].strip())
+                row["category"] = str(row["category"].strip())
+                row["quantity"] = int(row["quantity"].strip())
+                row["unit_price"] = Decimal(row["unit_price"].strip())
+            except (ValueError, InvalidOperation, TypeError, AttributeError) as e:
+                raise ValueError(f"Invalid data type in CSV file or the data missing: {file_path}. Error: {e} in row: {row}")
+            if not row["unit_price"].is_finite() or row["quantity"] < 0 or row["unit_price"] < 0:
+                raise ValueError(f"Negative or infinite values found in CSV file: {file_path}. Row: {row}")
             yield row
         if data is False:
             raise ValueError(f"No data found in CSV file: {file_path}")
-            
+
+ 
 def write_report(summary, input_path, output_path):
+    """Write the summary report to a Markdown file."""
     input_path = Path(input_path)
     output_path = Path(output_path)
     if not output_path.exists():
