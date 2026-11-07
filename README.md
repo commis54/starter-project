@@ -36,7 +36,7 @@ python -m starter_project.main --input data/sales.csv --output reports/summary.m
 ```
 If you have problems, you also can gain help using: 
 ```bash
-python -m starter_project.main --help.
+python -m starter_project.main --help
 ```
 The --input is obligatory in command, the --output is not.
 If you have not written --output, it will automatically be saved to reports/summary.md

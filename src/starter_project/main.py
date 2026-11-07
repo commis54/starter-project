@@ -15,17 +15,19 @@ def main():
 
     args = parser.parse_args()
     try:
-        write_report(calculate_summary(list(load_sales_csv(args.input))), args.input, args.output)
+        input = load_sales_csv(args.input)
+        analysis = calculate_summary(list(input))
+        write_report(analysis, args.input, args.output)  # output
         print(f"Report generated successfully at: {args.output}")
         return 0 
     except (FileNotFoundError) as e:
-        print(FileNotFoundError(f"CSV file not found: {args.input}"))
+        print(f"CSV file not found: {args.input}")
         return 1    
     except ValueError as e:
-        print(ValueError(f"Error processing the CSV file: {args.input}. Error: {e}"))
+        print(f"Error processing the CSV file: {args.input}. Error: {e}")
         return 1
     except PermissionError as e:
-        print(PermissionError(f"Permission denied when accessing the file: {args.input} or {args.output}. Error: {e}"))
+        print(f"Permission denied when accessing the file: {args.input} or {args.output}. Error: {e}")
         return 1
     except Exception as e:
         print(f"Unexpected error: {e}", file=sys.stderr)

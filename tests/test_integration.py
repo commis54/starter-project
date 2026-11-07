@@ -23,5 +23,14 @@ def test_full_sales_pipeline_integration(tmp_path):
 
     assert "# Sales Summary Report" in report_content
     assert "## Dataset Information" in report_content
+    assert "## Quantity Statistics" in report_content
+    assert "## Price Statistics" in report_content
     assert f"- Input file: {input_path}" in report_content
     assert f"- Records analyzed: {summary['record_count']}" in report_content
+
+    assert f"| {summary['total_quantity']} |" in report_content
+    assert f"| {summary['average_quantity']} |" in report_content
+    assert f"| {summary['minimum_quantity']} |" in report_content
+    assert f"| {summary['maximum_quantity']} |" in report_content
+    assert f"| {summary['average_unit_price']} |" in report_content
+    assert f"| {summary['total_revenue']} |" in report_content

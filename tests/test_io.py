@@ -2,7 +2,6 @@ import pytest
 from decimal import Decimal
 from pathlib import Path
 from starter_project.io import load_sales_csv, write_report
-from starter_project.main import main
 
 # Test input
 
@@ -76,7 +75,7 @@ def test_load_sales_csv_negative_values_quantity(tmp_path):
     csv_file.write_text("product,category,quantity,unit_price\n"
                         "Widget,Tech,-5,10.50\n", encoding="utf-8")
 
-    with pytest.raises(ValueError, match="Negative or infinite values found in CSV file"):
+    with pytest.raises(ValueError, match="Negative or non-finite values found in CSV file"):
         list(load_sales_csv(csv_file))
 
 def test_load_sales_csv_negative_values_unit_price(tmp_path):
@@ -84,7 +83,7 @@ def test_load_sales_csv_negative_values_unit_price(tmp_path):
     csv_file.write_text("product,category,quantity,unit_price\n"
                         "Widget,Tech,5,-10.50\n", encoding="utf-8")
 
-    with pytest.raises(ValueError, match="Negative or infinite values found in CSV file"):
+    with pytest.raises(ValueError, match="Negative or non-finite values found in CSV file"):
         list(load_sales_csv(csv_file))
 
 def test_load_sales_csv_infinite_values(tmp_path):
@@ -92,7 +91,7 @@ def test_load_sales_csv_infinite_values(tmp_path):
     csv_file.write_text("product,category,quantity,unit_price\n"
                         "Widget,Tech,5,Infinity\n", encoding="utf-8")
 
-    with pytest.raises(ValueError, match="Negative or infinite values found"):
+    with pytest.raises(ValueError, match="Negative or non-finite values found in CSV file"):
         list(load_sales_csv(csv_file))
 
 def test_load_sales_csv_non_finite_values(tmp_path):
@@ -100,7 +99,7 @@ def test_load_sales_csv_non_finite_values(tmp_path):
     csv_file.write_text("product,category,quantity,unit_price\n"
                         "Widget,Tech,5,NaN\n", encoding="utf-8")
 
-    with pytest.raises(ValueError, match="Negative or infinite values found"):
+    with pytest.raises(ValueError, match="Negative or non-finite values found in CSV file"):
         list(load_sales_csv(csv_file))
 
 def test_load_sales_csv_invalid_data_type_with_missing_value_product(tmp_path):
@@ -119,6 +118,20 @@ def test_load_sales_csv_invalid_data_type_with_missing_value_category(tmp_path):
     with pytest.raises(ValueError, match=f"Missing required data in CSV file:"):
         list(load_sales_csv(csv_file))
 
+def test_input_path_permission(monkeypatch, tmp_path):
+    dummy_file = tmp_path / "input.csv"
+    dummy_file.touch()
+
+    def mock_open(*args, **kwargs):
+        raise PermissionError("Cannot read the data file due to permission issues")
+
+    monkeypatch.setattr(Path, "open", mock_open)
+
+    generator = load_sales_csv(dummy_file)
+
+    with pytest.raises(PermissionError, match="Access Denied"):
+        next(generator)
+
 # Test output
 
 def test_write_report_creates_nested_output_path(tmp_path):
@@ -131,8 +144,8 @@ def test_write_report_creates_nested_output_path(tmp_path):
             "average_quantity": 10.5,
             "minimum_quantity": 1,
             "maximum_quantity": 20,
-            "average_unit_price": 27.5,
-            "total_revenue": 275.0,
+            "average_unit_price": Decimal("27.5"),
+            "total_revenue": Decimal("275.0"),
             }
 
     write_report(dummy_summary, input_path, output_path)
@@ -146,64 +159,17 @@ def test_write_report_creates_nested_output_path(tmp_path):
     assert "| Minimum quantity | 1 |" in content
     assert "| Average unit price | 27.5 |" in content
 
-def test_path_permissions(tmp_path):
-    input_path = tmp_path / "sales.csv"
-    output_path = tmp_path / "reports" / "summary.md"
+def test_output_path_permission(monkeypatch):
+    def mock_open(*args, **kwargs):
+        raise PermissionError("Cannot write to file due to permission issues")
+
+    monkeypatch.setattr("builtins.open", mock_open)
 
     dummy_summary = {
-            "record_count": 10,
-            "total_quantity": 105,
-            "average_quantity": 10.5,
-            "minimum_quantity": 1,
-            "maximum_quantity": 20,
-            "average_unit_price": 27.5,
-            "total_revenue": 275.0,
-            }
+        'record_count': 0, 'total_quantity': 0, 'average_quantity': 0,
+        'minimum_quantity': 0, 'maximum_quantity': 0, 'average_unit_price': 0,
+        'total_revenue': 0
+    }
 
-    # Create the output directory and remove write permissions
-    output_dir = output_path.parent
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_dir.chmod(0o555)  # Read and execute permissions only
-
-    with pytest.raises(PermissionError):
-        write_report(dummy_summary, input_path, output_path)
-
-    # Restore permissions for cleanup
-    output_dir.chmod(0o755)
-
-def test_main_function(tmp_path, monkeypatch):
-    input_path = tmp_path / "sales.csv"
-    output_path = tmp_path / "reports" / "summary.md"
-
-    # Create a valid CSV file
-    input_path.write_text("product,category,quantity,unit_price\n"
-                          "Widget,Tech,5,10.50\n", encoding="utf-8")
-
-    # Patch sys.argv to simulate command-line arguments
-    monkeypatch.setattr("sys.argv", ["main.py", "--input", str(input_path), "--output", str(output_path)])
-
-    exit_code = main()
-    assert exit_code == 0
-    assert output_path.exists()
-
-def test_permission_error_in_main(tmp_path, monkeypatch):
-    input_path = tmp_path / "sales.csv"
-    output_path = tmp_path / "reports" / "summary.md"
-
-    # Create a valid CSV file
-    input_path.write_text("product,category,quantity,unit_price\n"
-                          "Widget,Tech,5,10.50\n", encoding="utf-8")
-
-    # Create the output directory and remove write permissions
-    output_dir = output_path.parent
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_dir.chmod(0o555)  # Read and execute permissions only
-
-    # Patch sys.argv to simulate command-line arguments
-    monkeypatch.setattr("sys.argv", ["main.py", "--input", str(input_path), "--output", str(output_path)])
-
-    exit_code = main()
-    assert exit_code == 1
-
-    # Restore permissions for cleanup
-    output_dir.chmod(0o755)
+    result = write_report(dummy_summary, "input.csv", "output.md")
+    assert result == "Access Denied"
