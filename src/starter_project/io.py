@@ -71,6 +71,6 @@ def write_report(summary: dict[str, object], input_path: str | Path, output_path
             file.write(f"| Average unit price | {summary['average_unit_price']} |\n")
             file.write(f"| Total revenue | {summary['total_revenue']} |\n")
     except PermissionError:
-        return "Access Denied"
+        raise PermissionError("Access Denied")
         
 

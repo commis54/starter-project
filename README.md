@@ -1,11 +1,8 @@
-## Project title
-
-Reproducible Python Starter Repository.
+# Reproducible Python Starter Repository
 
 ## Description
 
-The aim of the application is to train using programming features I have learned, such as Git, GitHub, Linux, Bash, Python.
-The application takes data, analyzes it and gives a ready-to-use summary about data.
+A command-line Python application that reads and validates CSV sales data, calculates summary statistics, and generates a Markdown report.
 
 ## Features
 
@@ -62,6 +59,7 @@ It may be:
 - CSV file not found 
 - Path is not a file 
 - Invalid data type in CSV file
-- Negative values found in CSV file
+- Negative or non-finite values found in CSV file
 - No data found in CSV file
 - The data list is empty for summary
+- Incomplete record

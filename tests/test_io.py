@@ -171,5 +171,5 @@ def test_output_path_permission(monkeypatch):
         'total_revenue': 0
     }
 
-    result = write_report(dummy_summary, "input.csv", "output.md")
-    assert result == "Access Denied"
+    with pytest.raises(PermissionError, match="Access Denied"):
+        write_report(dummy_summary, "input.csv", "output.md")

@@ -1,5 +1,6 @@
 from starter_project.io import load_sales_csv, write_report
 from starter_project.analysis import calculate_summary
+from decimal import Decimal
 
 def test_full_sales_pipeline_integration(tmp_path):
     input_path = tmp_path / "valid_sales.csv"
@@ -34,3 +35,11 @@ def test_full_sales_pipeline_integration(tmp_path):
     assert f"| {summary['maximum_quantity']} |" in report_content
     assert f"| {summary['average_unit_price']} |" in report_content
     assert f"| {summary['total_revenue']} |" in report_content
+
+    assert summary['record_count'] == 3
+    assert summary['total_quantity'] == 8
+    assert summary['average_quantity'] == round((5 + 2 + 1) / 3, 2)
+    assert summary['minimum_quantity'] == 1
+    assert summary['maximum_quantity'] == 5
+    assert summary['average_unit_price'] == round(Decimal(str((10.00/3 + 20.00/3 + 5.50/3))), 2)
+    assert summary['total_revenue'] == Decimal(str((5 * 10.00) + (2 * 20.00) + (1 * 5.50)))

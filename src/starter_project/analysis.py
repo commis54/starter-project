@@ -8,10 +8,10 @@ def calculate_summary(records: list[dict[str, object]]) -> dict[str, object]:
 
     number_of_records = len(records)
     total_quantity = sum(quantity)
-    average_quantity = total_quantity / len(quantity)
+    average_quantity = round(total_quantity / len(quantity), 2)
     minimum_quantity = min(quantity)
     maximum_quantity = max(quantity)
-    average_unit_price = sum(unit_price) / len(unit_price)
+    average_unit_price = round(sum(unit_price) / len(unit_price), 2)
     total_revenue = sum(q * p for q, p in zip(quantity, unit_price))
     summary = {
     "record_count": number_of_records,

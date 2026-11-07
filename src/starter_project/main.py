@@ -21,13 +21,13 @@ def main():
         print(f"Report generated successfully at: {args.output}")
         return 0 
     except (FileNotFoundError) as e:
-        print(f"CSV file not found: {args.input}")
+        print(f"CSV file not found: {args.input}", file=sys.stderr)
         return 1    
     except ValueError as e:
-        print(f"Error processing the CSV file: {args.input}. Error: {e}")
+        print(f"Error processing the CSV file: {args.input}. Error: {e}", file=sys.stderr)
         return 1
     except PermissionError as e:
-        print(f"Permission denied when accessing the file: {args.input} or {args.output}. Error: {e}")
+        print(f"Permission denied when accessing the file: {args.input} or {args.output}. Error: {e}", file=sys.stderr)
         return 1
     except Exception as e:
         print(f"Unexpected error: {e}", file=sys.stderr)
